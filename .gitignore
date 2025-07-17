@@ -1,0 +1,8 @@
+/.vs/
+/.vscode/
+/.cache/
+/.idea/
+
+/*build*/
+/external/hps/
+/target_path.toml

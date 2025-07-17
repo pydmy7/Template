@@ -1,0 +1,33 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 3
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "RENDERENGINE_BUILD_TESTS": {
+                    "type": "BOOL",
+                    "value": "ON"
+                },
+                "CMAKE_EXPORT_COMPILE_COMMANDS": {
+                    "type": "BOOL",
+                    "value": "ON"
+                },
+                "CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS": {
+                    "type": "BOOL",
+                    "value": "ON"
+                },
+                "CMAKE_CXX_STANDARD": {
+                    "type": "STRING",
+                    "value": "20"
+                }
+            }
+        }
+    ]
+}
