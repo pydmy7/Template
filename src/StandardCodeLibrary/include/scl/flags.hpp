@@ -10,48 +10,115 @@ class Flags {
 public:
     using underlying_type = std::underlying_type_t<T>;
 
-    Flags() = default;
+    constexpr Flags() noexcept = default;
 
-    explicit Flags(T value) : value_{static_cast<underlying_type>(value)} {}
+    constexpr explicit Flags(T value) noexcept
+        : value_{static_cast<underlying_type>(value)} {}
 
-    explicit Flags(std::underlying_type_t<T> value) : value_{value} {}
+    constexpr explicit Flags(underlying_type value) noexcept
+        : value_{value} {}
 
-    Flags(const Flags&) = default;
-    Flags(Flags&&) = default;
+    constexpr Flags(Flags&&) noexcept = default;
+    constexpr Flags(const Flags&) noexcept = default;
 
-    Flags operator|(T o) const {
-        return Flags{value_ | static_cast<underlying_type>(o)};
-    }
+    constexpr Flags& operator=(const Flags&) noexcept = default;
 
-    Flags operator&(T o) const {
-        return Flags{value_ & static_cast<underlying_type>(o)};
-    }
-
-    Flags& operator=(const Flags&) = default;
-
-    Flags& operator=(T value) {
+    constexpr Flags& operator=(T value) noexcept {
         value_ = static_cast<underlying_type>(value);
         return *this;
     }
 
-    Flags& operator|=(T o) {
+    constexpr explicit operator T() const noexcept {
+        return static_cast<T>(value_);
+    }
+
+    constexpr explicit operator underlying_type() const noexcept {
+        return value_;
+    }
+
+    constexpr Flags operator|(T o) const noexcept {
+        return Flags{value_ | static_cast<underlying_type>(o)};
+    }
+
+    constexpr Flags operator&(T o) const noexcept {
+        return Flags{value_ & static_cast<underlying_type>(o)};
+    }
+
+    constexpr Flags operator^(T o) const noexcept {
+        return Flags{value_ ^ static_cast<underlying_type>(o)};
+    }
+
+    constexpr Flags operator~() const noexcept {
+        return Flags{~value_};
+    }
+
+    constexpr Flags& operator|=(T o) noexcept {
         value_ |= static_cast<underlying_type>(o);
         return *this;
     }
 
-    Flags& operator&=(T o) {
+    constexpr Flags& operator&=(T o) noexcept {
         value_ &= static_cast<underlying_type>(o);
         return *this;
     }
 
-    Flags operator~() const noexcept { return ~value_; }
+    constexpr Flags& operator^=(T o) noexcept {
+        value_ ^= static_cast<underlying_type>(o);
+        return *this;
+    }
 
-    explicit operator T() const { return static_cast<T>(value_); }
+    constexpr bool contains(T flag) const noexcept {
+        return (value_ & static_cast<underlying_type>(flag)) != 0;
+    }
 
-    explicit operator underlying_type() const { return value_; }
+    constexpr void reset() noexcept {
+        value_ = 0;
+    }
+
+    constexpr bool any() const noexcept {
+        return value_ != 0;
+    }
+
+    constexpr bool operator==(const Flags& other) const noexcept = default;
+
+    friend constexpr Flags operator|(T lhs, T rhs) noexcept {
+        return Flags(lhs) | rhs;
+    }
+
+    friend constexpr Flags operator&(T lhs, T rhs) noexcept {
+        return Flags(lhs) & rhs;
+    }
+
+    friend constexpr Flags operator^(T lhs, T rhs) noexcept {
+        return Flags(lhs) ^ rhs;
+    }
 
 private:
     underlying_type value_{};
 };
 
 }  // namespace scl
+
+template<typename E>
+requires std::is_enum_v<E>
+constexpr scl::Flags<E> operator|(E lhs, E rhs) noexcept {
+    return scl::Flags<E>{lhs} | rhs;
+}
+
+template<typename E>
+requires std::is_enum_v<E>
+constexpr scl::Flags<E> operator&(E lhs, E rhs) noexcept {
+    return scl::Flags<E>{lhs} & rhs;
+}
+
+template<typename E>
+requires std::is_enum_v<E>
+constexpr scl::Flags<E> operator^(E lhs, E rhs) noexcept {
+    return scl::Flags<E>{lhs} ^ rhs;
+}
+
+template<typename E>
+requires std::is_enum_v<E>
+constexpr scl::Flags<E> operator~(E val) noexcept {
+    return ~scl::Flags<E>{val};
+}
