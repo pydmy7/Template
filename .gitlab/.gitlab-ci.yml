@@ -1,0 +1,33 @@
+.job_rules_template: &job_rules
+  stage: build
+  variables:
+    GIT_STRATEGY: Clone
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_DEPTH: 1
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+windows-build-ninja-multi-config-clang:
+  tags:
+    - windows
+  script:
+    - ./gitlab/build-for-ci.ps1 -preset ninja-multi-config-clang -config Debug -target all
+    - ./gitlab/build-for-ci.ps1 -preset ninja-multi-config-clang -config Release -target all
+
+windows-build-ninja-multi-config-cl:
+  tags:
+    - windows
+  script:
+    - ./scripts/lauch-vsdev.ps1
+    - ./gitlab/build-for-ci.ps1 -preset ninja-multi-config-cl -config Debug -target all
+    - ./gitlab/build-for-ci.ps1 -preset ninja-multi-config-cl -config Release -target all
+
+windows-build-vs-cl:
+  tags:
+    - windows
+  script:
+    - ./scripts/lauch-vsdev.ps1
+    - ./gitlab/build-for-ci.ps1 -preset vs-cl -config Debug -target ALL_BUILD
+    - ./gitlab/build-for-ci.ps1 -preset vs-cl -config Release -target ALL_BUILD
