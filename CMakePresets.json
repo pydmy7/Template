@@ -11,7 +11,7 @@
             "hidden": true,
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "RENDERENGINE_BUILD_TESTS": {
+                "TEMPLATE_BUILD_TESTS": {
                     "type": "BOOL",
                     "value": "ON"
                 },

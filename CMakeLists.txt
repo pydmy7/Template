@@ -4,7 +4,7 @@ project(RenderEngine)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(RENDERENGINE_BUILD_TESTS "Build tests" OFF)
+option(TEMPLATE_BUILD_TESTS "Build tests" OFF)
 
 find_program(CCACHE_FOUND ccache)
 if (CCACHE_FOUND)
@@ -19,7 +19,7 @@ add_subdirectory(cmake)
 
 add_subdirectory(src)
 
-if (RENDERENGINE_BUILD_TESTS)
+if (TEMPLATE_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
