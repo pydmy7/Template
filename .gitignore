@@ -4,5 +4,4 @@
 /.idea/
 
 /*build*/
-/external/
 /target_path.toml
