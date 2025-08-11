@@ -1,2 +1,3 @@
 add_subdirectory(StandardCodeLibrary)
 add_subdirectory(OpenGLRenderEngine)
+add_subdirectory(LearnCuda)

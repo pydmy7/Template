@@ -1,5 +1,5 @@
 param (
-    [string]$preset = "ninja-multi-config-clang",
+    [string]$preset = "ninja-multi-config-cl",
     [string]$config = "Debug",
     [string]$target = "all"
 )

@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - --cuda-path=C://Users//18223//scoop//apps//cuda//current
+    - -IC://Users//18223//scoop//apps//cuda//current//include
