@@ -1,7 +1,7 @@
 enable_language(CUDA)
 
 set(CUDA_SEPARABLE_COMPILATION ON)
-set(CUDA_STANDARD 17)
+set(CUDA_STANDARD 20)
 set(CUDA_STANDARD_REQUIRED ON)
 
 set(target LearnCuda)

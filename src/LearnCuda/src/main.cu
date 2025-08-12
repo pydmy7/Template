@@ -1,11 +1,10 @@
 #include <cstdio>
-#include <iostream>
 
 #include <cuda_runtime.h>
 
 // CUDA kernel function
 __global__ void helloFromGPU() {
-    int xxx = threadIdx.x;
+    [[maybe_unused]] int xxx = threadIdx.x;
 }
 
 int main() {

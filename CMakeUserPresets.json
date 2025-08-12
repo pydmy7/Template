@@ -1,5 +1,5 @@
 {
-    "version": 3,
+    "version": 6,
     "cmakeMinimumRequired": {
         "major": 3,
         "minor": 21,
@@ -11,18 +11,6 @@
             "inherits": [ "base" ],
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": {
-                    "type": "PATH",
-                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-                },
-                "Qt5_DIR": {
-                    "type": "PATH",
-                    "value": "D:/Library/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5"
-                },
-                "CMAKE_PREFIX_PATH": {
-                    "type": "PATH",
-                    "value": "D:/Library/grpc-2022"
-                }
             }
         },
         {

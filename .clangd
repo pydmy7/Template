@@ -1,4 +1,8 @@
 CompileFlags:
   Add:
+    - -std=c++20
     - --cuda-path=C://Users//18223//scoop//apps//cuda//current
-    - -IC://Users//18223//scoop//apps//cuda//current//include
+  Remove:
+    - '-forward-unknown-to-host-compiler'
+    - '--generate-code=arch=*'
+    - '-Xcompiler=*'
