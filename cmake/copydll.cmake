@@ -16,6 +16,7 @@ function(copyDll target)
         TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Copying DLLs to $<TARGET_FILE_DIR:${target}>"
         COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${target}> $<TARGET_RUNTIME_DLLS:${target}>
+        COMMAND pwsh -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/scripts/version.ps1 -Output_Path $<TARGET_FILE_DIR:${target}>
         COMMAND_EXPAND_LISTS VERBATIM
     )
 endfunction(copyDll)
