@@ -1,12 +1,10 @@
 enable_language(CUDA)
 
-set(CUDA_SEPARABLE_COMPILATION ON)
-set(CUDA_STANDARD 20)
-set(CUDA_STANDARD_REQUIRED ON)
-
 set(target LearnCuda)
 add_executable(${target} src/main.cu)
 
 find_package(CUDAToolkit REQUIRED)
 
-target_link_libraries(${target} PRIVATE CUDA::cudart)
+target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
+target_compile_features(${target} PRIVATE cxx_std_17 cuda_std_17)
+set_target_properties(${target} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
