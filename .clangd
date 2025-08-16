@@ -6,3 +6,6 @@ CompileFlags:
     - '-forward-unknown-to-host-compiler'
     - '--generate-code=arch=*'
     - '-Xcompiler=*'
+    - '--extended-lambda'
+    - '--expt-relaxed-constexpr'
+    - '-rdc=true'
