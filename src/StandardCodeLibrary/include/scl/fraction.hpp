@@ -1,7 +1,10 @@
 #pragma once
 
 #include <numeric>
+#include <istream>
 #include <ostream>
+
+namespace scl {
 
 template<class T>
 struct Fraction {
@@ -75,6 +78,14 @@ struct Fraction {
     friend bool operator>=(const Fraction &lhs, const Fraction &rhs) {
         return lhs.numerator * rhs.denominator >= rhs.numerator * lhs.denominator;
     }
+    friend constexpr std::istream& operator>>(std::istream& is, Fraction& a) {
+        T num, den;
+        is >> num;
+        is.ignore(1, '/');
+        is >> den;
+        a = Fraction(num, den);
+        return is;
+    }
     friend std::ostream &operator<<(std::ostream &os, Fraction x) {
         T g = std::gcd(x.numerator, x.denominator);
         if (x.denominator == g) {
@@ -84,3 +95,5 @@ struct Fraction {
         }
     }
 };
+
+}  // namespace scl

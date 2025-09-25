@@ -24,21 +24,3 @@ std::int64_t sqrt(std::int64_t n) {
     }
     return s;
 }
-
-std::int64_t sqrt(std::int64_t n) {
-    auto x = std::sqrt(2.0L * n);
-
-    auto f = [](auto x) {
-        return x * (x + 1) / 2;
-    };
-
-    // f(x - 1) + 1 <= n <= f(x)
-    while (f(x) < n) {
-        ++x;
-    }
-    while (f(x - 1) + 1 > n) {
-        --x;
-    }
-
-    return x;
-}

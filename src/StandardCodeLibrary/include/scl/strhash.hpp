@@ -18,7 +18,7 @@ private:
     std::vector<std::vector<i64>> h, rh, pw;
 
 public:
-    explicit StrHash(const std::string& s) : n(s.size()), h(2, std::vector<i64>(n + 1)), rh(2, std::vector<i64>(n + 1)), pw(h) {
+    explicit StrHash(const std::string& s) : n(static_cast<int>(s.size())), h(2, std::vector<i64>(n + 1)), rh(2, std::vector<i64>(n + 1)), pw(h) {
         pw[0][0] = pw[1][0] = 1ll;
         for (int i = 1; i <= n; ++i) {
             pw[0][i] = pw[0][i - 1] * p[0] % mod[0];
@@ -46,4 +46,4 @@ public:
     }
 };
 
-}
+}  // namespace scl

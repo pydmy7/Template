@@ -3,6 +3,8 @@
 #include <vector>
 #include <bit>
 
+namespace scl {
+
 template<class T, class Cmp = std::less<T>>
 struct RMQ {
     using u64 = std::uint64_t;
@@ -88,3 +90,5 @@ struct RMQ {
         }
     }
 };
+
+}  // namespace scl
