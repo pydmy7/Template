@@ -4,6 +4,7 @@
 #include "scl/fraction.hpp"
 #include "scl/rmq.hpp"
 #include "scl/strhash.hpp"
+#include "scl/lazyeraseheap.hpp"
 
 int main() {
     return 0;
