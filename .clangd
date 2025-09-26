@@ -1,12 +1,15 @@
 CompileFlags:
   Add:
     - -xcuda
-    - -std=c++20
+    - --no-cuda-version-check
     - --cuda-path=C://Users//18223//scoop//apps//cuda//current
+    - -std=c++20
   Remove:
-    - '-forward-unknown-to-host-compiler'
-    - '--generate-code=arch=*'
-    - '-Xcompiler=*'
-    - '--extended-lambda'
-    - '--expt-relaxed-constexpr'
-    - '-rdc=true'
+    - -arch=*
+    - -rdc=*
+    - -Xcompiler=*
+    - -forward-unknown-to-host-compiler
+    - --expt-*
+    - --generate-code=*
+    - --extended-lambda
+    - --expt-relaxed-constexpr
