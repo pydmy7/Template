@@ -4,7 +4,7 @@ project(Template)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(TEMPLATE_BUILD_TESTS "Build tests" OFF)
+option(TEMPLATE_BUILD_TESTS "Build tests" ON)
 
 find_program(CCACHE_FOUND ccache)
 if (CCACHE_FOUND)
