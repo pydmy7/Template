@@ -37,7 +37,7 @@ struct Fenwick {
         return sum(r) - sum(l);
     }
 
-    int kth(const T &k) {
+    int kth(const T& k) {
         int x = 0;
         T cur{};
         for (int i = 1 << (std::bit_width(n) - 1); i; i /= 2) {

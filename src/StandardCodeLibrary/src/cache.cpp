@@ -9,5 +9,5 @@
 #include "scl/rmq.hpp"
 #include "scl/singleton.hpp"
 #include "scl/strhash.hpp"
-// #include "scl/temporary.hpp"
+#include "scl/temporary.hpp"
 #include "scl/timer.hpp"
