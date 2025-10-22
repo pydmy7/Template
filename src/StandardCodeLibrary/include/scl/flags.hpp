@@ -1,124 +1,174 @@
 #pragma once
 
 #include <type_traits>
+#include <cassert>
 
-namespace scl {
+namespace bitmask_enum {
 
-template<typename T>
-requires std::is_enum_v<T>
-class Flags {
-public:
-    using underlying_type = std::underlying_type_t<T>;
-
-    constexpr Flags() noexcept = default;
-
-    constexpr explicit Flags(T value) noexcept
-        : value_{static_cast<underlying_type>(value)} {}
-
-    constexpr explicit Flags(underlying_type value) noexcept
-        : value_{value} {}
-
-    constexpr Flags(Flags&&) noexcept = default;
-    constexpr Flags(const Flags&) noexcept = default;
-
-    constexpr Flags& operator=(const Flags&) noexcept = default;
-
-    constexpr Flags& operator=(T value) noexcept {
-        value_ = static_cast<underlying_type>(value);
-        return *this;
-    }
-
-    constexpr explicit operator T() const noexcept {
-        return static_cast<T>(value_);
-    }
-
-    constexpr explicit operator underlying_type() const noexcept {
-        return value_;
-    }
-
-    constexpr Flags operator|(T o) const noexcept {
-        return Flags{value_ | static_cast<underlying_type>(o)};
-    }
-
-    constexpr Flags operator&(T o) const noexcept {
-        return Flags{value_ & static_cast<underlying_type>(o)};
-    }
-
-    constexpr Flags operator^(T o) const noexcept {
-        return Flags{value_ ^ static_cast<underlying_type>(o)};
-    }
-
-    constexpr Flags operator~() const noexcept {
-        return Flags{~value_};
-    }
-
-    constexpr Flags& operator|=(T o) noexcept {
-        value_ |= static_cast<underlying_type>(o);
-        return *this;
-    }
-
-    constexpr Flags& operator&=(T o) noexcept {
-        value_ &= static_cast<underlying_type>(o);
-        return *this;
-    }
-
-    constexpr Flags& operator^=(T o) noexcept {
-        value_ ^= static_cast<underlying_type>(o);
-        return *this;
-    }
-
-    constexpr bool contains(T flag) const noexcept {
-        return (value_ & static_cast<underlying_type>(flag)) != 0;
-    }
-
-    constexpr void reset() noexcept {
-        value_ = 0;
-    }
-
-    constexpr bool any() const noexcept {
-        return value_ != 0;
-    }
-
-    constexpr bool operator==(const Flags& other) const noexcept = default;
-
-    friend constexpr Flags operator|(T lhs, T rhs) noexcept {
-        return Flags(lhs) | rhs;
-    }
-
-    friend constexpr Flags operator&(T lhs, T rhs) noexcept {
-        return Flags(lhs) & rhs;
-    }
-
-    friend constexpr Flags operator^(T lhs, T rhs) noexcept {
-        return Flags(lhs) ^ rhs;
-    }
-
-private:
-    underlying_type value_{};
+// =====================================================================
+//  启用某个 enum 支持位运算
+// =====================================================================
+template <typename E>
+struct EnableBitMaskOps {
+    static constexpr bool enabled = false;
 };
 
-}  // namespace scl
+namespace detail {
 
-template<typename E>
-requires std::is_enum_v<E>
-constexpr scl::Flags<E> operator|(E lhs, E rhs) noexcept {
-    return scl::Flags<E>{lhs} | rhs;
+template <typename E>
+using enable_if_enum_t =
+    std::enable_if_t<EnableBitMaskOps<E>::enabled, E>;
+
+template <typename E>
+using underlying_t = std::underlying_type_t<E>;
+
+} // namespace detail
+
+// =====================================================================
+//  基本位运算符
+// =====================================================================
+
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator|(E lhs, E rhs) noexcept {
+    using U = detail::underlying_t<E>;
+    return static_cast<E>(static_cast<U>(lhs) | static_cast<U>(rhs));
 }
 
-template<typename E>
-requires std::is_enum_v<E>
-constexpr scl::Flags<E> operator&(E lhs, E rhs) noexcept {
-    return scl::Flags<E>{lhs} & rhs;
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator&(E lhs, E rhs) noexcept {
+    using U = detail::underlying_t<E>;
+    return static_cast<E>(static_cast<U>(lhs) & static_cast<U>(rhs));
 }
 
-template<typename E>
-requires std::is_enum_v<E>
-constexpr scl::Flags<E> operator^(E lhs, E rhs) noexcept {
-    return scl::Flags<E>{lhs} ^ rhs;
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator^(E lhs, E rhs) noexcept {
+    using U = detail::underlying_t<E>;
+    return static_cast<E>(static_cast<U>(lhs) ^ static_cast<U>(rhs));
 }
 
-template<typename E>
-requires std::is_enum_v<E>
-constexpr scl::Flags<E> operator~(E val) noexcept {
-    return ~scl::Flags<E>{val};
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator~(E e) noexcept {
+    using U = detail::underlying_t<E>;
+    return static_cast<E>(~static_cast<U>(e));
 }
+
+// =====================================================================
+//  复合赋值运算符
+// =====================================================================
+
+template <typename E>
+constexpr std::enable_if_t<EnableBitMaskOps<E>::enabled, E&>
+operator|=(E& lhs, E rhs) noexcept {
+    return lhs = lhs | rhs;
+}
+
+template <typename E>
+constexpr std::enable_if_t<EnableBitMaskOps<E>::enabled, E&>
+operator&=(E& lhs, E rhs) noexcept {
+    return lhs = lhs & rhs;
+}
+
+template <typename E>
+constexpr std::enable_if_t<EnableBitMaskOps<E>::enabled, E&>
+operator^=(E& lhs, E rhs) noexcept {
+    return lhs = lhs ^ rhs;
+}
+
+// =====================================================================
+//  位移运算符
+// =====================================================================
+
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator<<(E lhs, int shift) noexcept {
+    using U = detail::underlying_t<E>;
+    assert(shift >= 0 && shift < static_cast<int>(sizeof(U) * 8));
+    return static_cast<E>(static_cast<U>(lhs) << shift);
+}
+
+template <typename E>
+constexpr detail::enable_if_enum_t<E>
+operator>>(E lhs, int shift) noexcept {
+    using U = detail::underlying_t<E>;
+    assert(shift >= 0 && shift < static_cast<int>(sizeof(U) * 8));
+    return static_cast<E>(static_cast<U>(lhs) >> shift);
+}
+
+template <typename E>
+constexpr std::enable_if_t<EnableBitMaskOps<E>::enabled, E&>
+operator<<=(E& lhs, int shift) noexcept {
+    lhs = lhs << shift;
+    return lhs;
+}
+
+template <typename E>
+constexpr std::enable_if_t<EnableBitMaskOps<E>::enabled, E&>
+operator>>=(E& lhs, int shift) noexcept {
+    lhs = lhs >> shift;
+    return lhs;
+}
+
+// =====================================================================
+//  编译期验证辅助函数（测试示例）
+// =====================================================================
+
+#if defined(__cpp_constexpr)
+template <typename E>
+constexpr bool self_test() noexcept {
+    if constexpr (!EnableBitMaskOps<E>::enabled)
+        return true;
+    using U = detail::underlying_t<E>;
+    constexpr E a = static_cast<E>(1 << 0);
+    constexpr E b = static_cast<E>(1 << 1);
+    constexpr E c = static_cast<E>(1 << 2);
+
+    E test = a | b;
+    test &= ~a;
+    test |= c;
+    test ^= b;
+    test <<= 1;
+    test >>= 1;
+    // 转回底层整数验证
+    return static_cast<U>(test) == static_cast<U>(c);
+}
+#endif
+
+} // namespace bitmask_enum
+
+
+// =====================================================================
+// Example Usage
+// =====================================================================
+/*
+#include "bitmask_enum.hpp"
+using namespace bitmask_enum;
+
+enum class Permission : uint8_t {
+    None    = 0,
+    Read    = 1 << 0,
+    Write   = 1 << 1,
+    Execute = 1 << 2
+};
+
+template <>
+struct bitmask_enum::EnableBitMaskOps<Permission> {
+    static constexpr bool enabled = true;
+};
+
+constexpr bool ok = bitmask_enum::self_test<Permission>();
+static_assert(ok, "bitmask_enum self test failed.");
+
+int main() {
+    Permission p = Permission::Read | Permission::Write;
+    p |= Permission::Execute;
+    p <<= 1;
+    p >>= 1;
+    if (p & Permission::Read)
+        return 0;
+    return 1;
+}
+*/
