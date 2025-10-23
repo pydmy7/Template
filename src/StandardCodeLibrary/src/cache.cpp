@@ -1,6 +1,6 @@
 #include "scl/dsu.hpp"
 #include "scl/fenwick.hpp"
-#include "scl/flags.hpp"
+#include "scl/bitmask_enum.hpp"
 #include "scl/fraction.hpp"
 #include "scl/hdl.hpp"
 #include "scl/lazyeraseheap.hpp"
