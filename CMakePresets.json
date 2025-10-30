@@ -26,6 +26,18 @@
                 "CMAKE_CXX_STANDARD": {
                     "type": "STRING",
                     "value": "20"
+                },
+                "CMAKE_CUDA_STANDARD": {
+                    "type": "STRING",
+                    "value": "20"
+                },
+                "CMAKE_CUDA_SEPARABLE_COMPILATION": {
+                    "type": "BOOL",
+                    "value": "ON"
+                },
+                "CMAKE_CUDA_ARCHITECTURES": {
+                    "type": "STRING",
+                    "value": "native"
                 }
             }
         }

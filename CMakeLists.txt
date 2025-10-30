@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(Template)
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(TEMPLATE_BUILD_TESTS "Build tests" ON)
@@ -13,6 +11,8 @@ if (CCACHE_FOUND)
     set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
     set(CMAKE_CUDA_COMPILER_LAUNCHER ccache)
 endif(CCACHE_FOUND)
+
+project(Template LANGUAGES C CXX CUDA)
 
 include(external/FindLibray.cmake)
 add_subdirectory(external)
