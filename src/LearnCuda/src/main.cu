@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cuda_runtime.h>
 
+#include "cudapp.cuh"
+
 __global__ void kernel() {
     printf("Hello, world!\n");
 }

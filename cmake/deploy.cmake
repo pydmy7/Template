@@ -53,8 +53,9 @@ function(deploy target)
     # compile config
     target_compile_features(${target} PUBLIC cxx_std_20)
     target_compile_options(${target} PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>:/permissive;/Zc:preprocessor;/utf-8;/W4;/EHsc;>
+        $<$<CXX_COMPILER_ID:MSVC>:/permissive;/Zc:preprocessor;/Zc:__cplusplus;/utf-8;/W4;/EHsc;>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic;-Wshadow;>
+        $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda;--expt-relaxed-constexpr;>
     )
 
     if (type STREQUAL "EXECUTABLE")
