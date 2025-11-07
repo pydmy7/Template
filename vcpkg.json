@@ -1,0 +1,6 @@
+{
+  "dependencies": [
+    "spdlog",
+    "eigen3", "intel-mkl", "blas", "lapack"
+  ]
+}

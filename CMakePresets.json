@@ -2,8 +2,8 @@
     "version": 6,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 21,
-        "patch": 3
+        "minor": 24,
+        "patch": 0
     },
     "configurePresets": [
         {
@@ -22,6 +22,10 @@
                 "CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS": {
                     "type": "BOOL",
                     "value": "ON"
+                },
+                "CMAKE_TOOLCHAIN_FILE": {
+                    "type": "FILEPATH",
+                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
                 },
                 "CMAKE_CXX_STANDARD": {
                     "type": "STRING",
