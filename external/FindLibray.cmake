@@ -1,9 +1,9 @@
 find_package(Eigen3 CONFIG NO_MODULE)
-# find_package(OpenMP REQUIRED)
+find_package(OpenMP REQUIRED)
 # find_package(MKL CONFIG REQUIRED)
 # find_package(BLAS CONFIG REQUIRED)
 # find_package(LAPACK CONFIG REQUIRED)
-# target_link_libraries(Eigen3::Eigen INTERFACE OpenMP::OpenMP_CXX)
+target_link_libraries(Eigen3::Eigen INTERFACE OpenMP::OpenMP_CXX)
 # target_link_libraries(Eigen3::Eigen PRIVATE MKL::MKL BLAS::BLAS LAPACK::LAPACK)
 # target_compile_definitions(Eigen3::Eigen INTERFACE EIGEN_USE_MKL_ALL)
 
