@@ -88,6 +88,9 @@ std::vector<std::vector<int>> solve(std::vector<Info> infos) {
         for (auto id : group) {
             checkResultValid.emplace(id);
         }
+        // for (auto i = 1; i < static_cast<int>(group.size()); ++i) {
+        //     assert(intersection(getInfoById(group[i - 1]), getInfoById(group[i])));
+        // }
     }
     assert(checkResultValid.size() == idCount);
 
