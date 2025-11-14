@@ -1,21 +1,13 @@
 #include <algorithm>
-#include <cassert>
 #include <limits>
 #include <vector>
 #include <array>
-#include <tuple>
-#include <iostream>
 #include <set>
-
-struct Edge {
-    int v, d;
-    bool operator<(const auto& other) const {
-        return !(d < other.d);
-    }
-};
+#include <queue>
+#include <cassert>
+#include <iostream>
 
 struct Info {
-    int id;
     std::array<double, 3> p1;
     std::array<double, 3> p2;
 };
@@ -36,51 +28,70 @@ bool intersection(const Info& a, const Info& b) {
         || isSamePoint(a.p2, b.p2);
 }
 
-std::vector<std::vector<int>> solve(std::vector<Info> infos) {
-    const auto idCount = infos.size();
-    std::vector<std::vector<int>> groups;
-
-    // check input validity
-    assert(std::all_of(infos.begin(), infos.end(), [idCount](const auto& info) {
-        return info.id >= 0 && info.id < idCount;
-    }));
-    {
-        std::set<int> idSet;
-        for (auto&& info : infos) {
-            idSet.emplace(info.id);
-        }
-        assert(idSet.size() == idCount);
+std::vector<int> bfs(const std::vector<std::vector<int>>& adj, std::vector<bool> seen, int start) {
+    if (!adj[start].empty() && adj[start][0] == start) {
+        return {start};
     }
 
-    // filter closed coil
-    {
-        auto dividIter = std::partition(infos.begin(), infos.end(), [](const auto& info) {
-            return !isSamePoint(info.p1, info.p2);
-        });
-        for (auto iter = dividIter; iter != infos.end(); ++iter) {
-            groups.emplace_back(iter->id);
+    std::queue<std::vector<int>> que;
+    que.push({start});
+    seen[start] = true;
+    while (!que.empty()) {
+        auto path = que.front();
+        que.pop();
+        auto u = path.back();
+        if (u == start) {
+            return path;
         }
-        infos.erase(dividIter, infos.end());
-    }
-
-    // build graph
-    std::vector<std::vector<Edge>> adj(idCount);
-    for (auto i = 0; i < infos.size(); ++i) {
-        for (auto j = i + 1; j < infos.size(); ++j) {
-            if (infos[i].id == infos[j].id
-                || !intersection(infos[i], infos[j])
-            ) {
+        for (auto v : adj[u]) {
+            if (seen[v]) {
+                if (v == start) {
+                    path.push_back(v);
+                    return path;
+                }
                 continue;
             }
+            auto newPath = path;
+            newPath.push_back(v);
+            que.push(newPath);
+            seen[v] = true;
+        }
+    }
+}
 
-            auto u = infos[i].id;
-            auto v = infos[j].id;
-            adj[u].emplace_back(v, 1);
-            adj[v].emplace_back(u, 1);
+std::vector<std::vector<int>> solve(std::vector<Info> infos) {
+    const int n = infos.size();
+
+    // build graph
+    std::vector<std::vector<int>> adj(n);
+    for (auto i = 0; i < n; ++i) {
+        if (isSamePoint(infos[i].p1, infos[i].p2)) {
+            adj[i].push_back(i);
+        }
+        for (auto j = i + 1; j < n; ++j) {
+            if (!intersection(infos[i], infos[j])) {
+                continue;
+            }
+            adj[i].push_back(j);
+            adj[j].push_back(i);
         }
     }
 
-    // 每条边只能用一次 == 每个点只能属于某一个最小环
+    std::vector<std::vector<int>> groups;
+    std::vector<bool> seen(n, false);
+    for (auto i = 0; i < n; ++i) {
+        if (seen[i]) {
+            continue;
+        }
+        auto path = bfs(adj, seen, i);  // hard copy to seen
+        if (path.empty()) {
+            path = {i};
+        }
+        groups.push_back(path);
+        for (auto id : path) {
+            seen[id] = true;
+        }
+    }
 
     // check result
     std::set<int> checkResultValid;
@@ -88,11 +99,11 @@ std::vector<std::vector<int>> solve(std::vector<Info> infos) {
         for (auto id : group) {
             checkResultValid.emplace(id);
         }
-        // for (auto i = 1; i < static_cast<int>(group.size()); ++i) {
-        //     assert(intersection(getInfoById(group[i - 1]), getInfoById(group[i])));
-        // }
+        for (auto i = 0, m = static_cast<int>(group.size()); i < m; ++i) {
+            assert(intersection(infos[i], infos[(i + 1) % m]));
+        }
     }
-    assert(checkResultValid.size() == idCount);
+    assert(static_cast<int>(checkResultValid.size()) == n);
 
     return groups;
 }
