@@ -1,11 +1,22 @@
-#include <algorithm>
-#include <limits>
 #include <vector>
 #include <array>
 #include <set>
 #include <queue>
 #include <cassert>
 #include <iostream>
+
+void printVector(const std::vector<std::vector<int>>& vec) {
+    std::cout << "=======================================\n";
+    std::cout << "size() == " << vec.size() << '\n';
+    for (auto idx = 0; auto&& v : vec) {
+        std::cout << "idx == " << idx << ": ";
+        for (auto vi : v) {
+            std::cout << vi << ' ';
+        }
+        std::cout << '\n';
+        ++idx;
+    }
+}
 
 struct Info {
     std::array<double, 3> p1;
@@ -28,27 +39,24 @@ bool intersection(const Info& a, const Info& b) {
         || isSamePoint(a.p2, b.p2);
 }
 
-std::vector<int> bfs(const std::vector<std::vector<int>>& adj, std::vector<bool> seen, int start) {
-    if (!adj[start].empty() && adj[start][0] == start) {
-        return {start};
-    }
+bool isSamePosition(const Info& a, const Info& b) {
+    return (isSamePoint(a.p1, b.p1) && isSamePoint(a.p2, b.p2))
+        || (isSamePoint(a.p1, b.p2) && isSamePoint(a.p2, b.p1));
+}
 
+std::vector<int> bfs(const std::vector<std::vector<int>>& adj, std::vector<bool> seen, int start, int end) {
     std::queue<std::vector<int>> que;
-    que.push({start});
+    que.push({ start });
     seen[start] = true;
     while (!que.empty()) {
         auto path = que.front();
         que.pop();
         auto u = path.back();
-        if (u == start) {
+        if (u == end) {
             return path;
         }
         for (auto v : adj[u]) {
-            if (seen[v]) {
-                if (v == start) {
-                    path.push_back(v);
-                    return path;
-                }
+            if (seen[v] || std::tie(u, v) == std::tie(start, end)) {
                 continue;
             }
             auto newPath = path;
@@ -57,41 +65,86 @@ std::vector<int> bfs(const std::vector<std::vector<int>>& adj, std::vector<bool>
             seen[v] = true;
         }
     }
+
+    return {};
 }
 
 std::vector<std::vector<int>> solve(std::vector<Info> infos) {
     const int n = infos.size();
 
-    // build graph
-    std::vector<std::vector<int>> adj(n);
+    std::vector<std::vector<int>> groups;
+    std::vector<bool> seen(n, false);
+
+    // cycle = 1
     for (auto i = 0; i < n; ++i) {
         if (isSamePoint(infos[i].p1, infos[i].p2)) {
-            adj[i].push_back(i);
-        }
-        for (auto j = i + 1; j < n; ++j) {
-            if (!intersection(infos[i], infos[j])) {
-                continue;
-            }
-            adj[i].push_back(j);
-            adj[j].push_back(i);
+            groups.push_back({i});
+            seen[i] = true;
         }
     }
 
-    std::vector<std::vector<int>> groups;
-    std::vector<bool> seen(n, false);
+    // cycle = 2
     for (auto i = 0; i < n; ++i) {
         if (seen[i]) {
             continue;
         }
-        auto path = bfs(adj, seen, i);  // hard copy to seen
+        for (auto j = i + 1; j < n; ++j) {
+            if (seen[j]) {
+                continue;
+            }
+            if (isSamePosition(infos[i], infos[j])) {
+                groups.push_back({i, j});
+                seen[i] = true;
+                seen[j] = true;
+                break;
+            }
+        }
+    }
+
+    // general
+    std::vector<std::vector<int>> adj(n);
+    for (auto i = 0; i < n; ++i) {
+        if (seen[i]) {
+            continue;
+        }
+        for (auto j = i + 1; j < n; ++j) {
+            if (seen[j]) {
+                continue;
+            }
+            if (intersection(infos[i], infos[j])) {
+                adj[i].push_back(j);
+                adj[j].push_back(i);
+            }
+        }
+    }
+    printVector(adj);
+
+    for (auto i = 0; i < n; ++i) {
+        if (seen[i]) {
+            continue;
+        }
+
+        std::vector<int> path;
+        for (auto j : adj[i]) {
+            if (seen[j]) {
+                continue;
+            }
+            auto res = bfs(adj, seen, i, j);
+            if (!res.empty()) {
+                path = res;
+                break;
+            }
+        }
+
         if (path.empty()) {
-            path = {i};
+            path = { i };
         }
         groups.push_back(path);
         for (auto id : path) {
             seen[id] = true;
         }
     }
+    printVector(groups);
 
     // check result
     std::set<int> checkResultValid;
@@ -100,7 +153,7 @@ std::vector<std::vector<int>> solve(std::vector<Info> infos) {
             checkResultValid.emplace(id);
         }
         for (auto i = 0, m = static_cast<int>(group.size()); i < m; ++i) {
-            assert(intersection(infos[i], infos[(i + 1) % m]));
+            assert(intersection(infos[group[i]], infos[group[(i + 1) % m]]));
         }
     }
     assert(static_cast<int>(checkResultValid.size()) == n);
@@ -110,7 +163,66 @@ std::vector<std::vector<int>> solve(std::vector<Info> infos) {
 
 int main() {
 
-    auto ans = solve({});
+    std::vector<Info> infos = {
+        Info {
+            std::array<double, 3> { -1, 0, 0 },
+            std::array<double, 3> { -1, 0, 0 },
+        },
+
+        Info {
+            std::array<double, 3> { 0, 0, 0 },
+            std::array<double, 3> { 0, 0, 1 },
+        },
+
+        Info {
+            std::array<double, 3> { 1, 0, 0 },
+            std::array<double, 3> { 2, 0, 0 },
+        },
+        Info {
+            std::array<double, 3> { 2, 0, 0 },
+            std::array<double, 3> { 1, 0, 0 },
+        },
+
+        Info {
+            std::array<double, 3> { 3, 0, 0 },
+            std::array<double, 3> { 3, 1, 0 },
+        },
+        Info {
+            std::array<double, 3> { 4, 0, 0 },
+            std::array<double, 3> { 3, 0, 0 },
+        },
+        Info {
+            std::array<double, 3> { 4, 0, 0 },
+            std::array<double, 3> { 3, 1, 0 },
+        },
+
+        Info {
+            std::array<double, 3> { 5, 0, 0 },
+            std::array<double, 3> { 6, 0, 0 },
+        },
+        Info {
+            std::array<double, 3> { 6, 0, 0 },
+            std::array<double, 3> { 6, 1, 0 },
+        },
+        Info {
+            std::array<double, 3> { 6, 1, 0 },
+            std::array<double, 3> { 5, 0, 0 },
+        },
+        Info {
+            std::array<double, 3> { 6, 0, 0 },
+            std::array<double, 3> { 6, 1, 0 },
+        },
+        Info {
+            std::array<double, 3> { 7, 0, 0 },
+            std::array<double, 3> { 6, 0, 0 },
+        },
+        Info {
+            std::array<double, 3> { 7, 0, 0 },
+            std::array<double, 3> { 6, 1, 0 },
+        },
+    };
+    auto ans = solve(infos);
+    printVector(ans);
 
     return 0;
 }
