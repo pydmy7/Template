@@ -9,6 +9,7 @@ if ($clean) {
     echo "`nClean build directories..."
     Remove-Item -Recurse -Force -Path .cache
     Remove-Item -Recurse -Force -Path build
+    Remove-Item -Recurse -Force -Path target_path.toml
     echo "`nClean completed."
     exit 0
 }

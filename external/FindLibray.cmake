@@ -8,3 +8,5 @@ target_link_libraries(Eigen3::Eigen INTERFACE OpenMP::OpenMP_CXX)
 # target_compile_definitions(Eigen3::Eigen INTERFACE EIGEN_USE_MKL_ALL)
 
 find_package(spdlog CONFIG REQUIRED)
+
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)

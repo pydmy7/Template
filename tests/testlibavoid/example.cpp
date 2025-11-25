@@ -1,80 +1,121 @@
-/*
- * vim: ts=4 sw=4 et tw=0 wm=0
- *
- * libavoid - Fast, Incremental, Object-avoiding Line Router
- * Copyright (C) 2004-2007  Michael Wybrow <mjwybrow@users.sourceforge.net>
- * Copyright (C) 2009  Monash University
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * See the file LICENSE.LGPL distributed with the library.
- *
- * Licensees holding a valid commercial license may use this file in
- * accordance with the commercial license agreement provided with the
- * library.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * Author(s):   Michael Wybrow <mjwybrow@users.sourceforge.net>
-*/
+// #include <QApplication>
+// #include <QGraphicsView>
+// #include <QGraphicsScene>
+// #include <QGraphicsRectItem>
+// #include <QGraphicsEllipseItem>
+// #include <QGraphicsPathItem>
+// #include <QMainWindow>
+// #include <QDebug>
+// #include <QPainterPath>
 
-#include "libavoid/libavoid.h"
+// #include <iostream>
 
+// #include "SchematicHelper.hpp"
 
-static void connCallback(void *ptr)
-{
-    Avoid::ConnRef *connRef = (Avoid::ConnRef *) ptr;
+// schematichelper::SchematicHelper* schematicHelper = new schematichelper::SchematicHelper{};
 
-    printf("Connector %u needs rerouting!\n", connRef->id());
+// // Custom square class that prints position when moved
+// class DraggableSquare : public QGraphicsRectItem {
+// public:
+//     DraggableSquare(qreal x, qreal y, qreal width, qreal height, QGraphicsItem *parent = nullptr)
+//         : QGraphicsRectItem(x, y, width, height, parent) {
+//         setFlag(QGraphicsItem::ItemIsMovable, true);
+//         setFlag(QGraphicsItem::ItemSendsGeometryChanges, true); // Enable itemChange notifications
 
-    const Avoid::PolyLine& route = connRef->displayRoute();
-    printf("New path: ");
-    for (size_t i = 0; i < route.ps.size(); ++i)
-    {
-        printf("%s(%f, %f)", (i > 0) ? "-" : "",
-                route.ps[i].x, route.ps[i].y);
-    }
-    printf("\n");
-}
+//         // Set appearance
+//         setBrush(QBrush(Qt::lightGray));
+//         setPen(QPen(Qt::black, 1));
+//     }
 
+// protected:
+//     // Override itemChange to detect position changes
+//     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override {
+//         if (change == ItemPositionChange) {
+//             QPointF newPos = value.toPointF();
 
-int main(void)
-{
-    Avoid::Router *router = new Avoid::Router(Avoid::PolyLineRouting);
+//             // Get the polygon representing the shape
+//             QPolygonF polygon = mapToScene(rect());
+//             polygon.translate(newPos - pos()); // Adjust for new position
 
-    Avoid::Point srcPt(1.2, 0.5);
-    Avoid::Point dstPt(1.5, 4);
-    Avoid::ConnRef *connRef = new Avoid::ConnRef(router, srcPt, dstPt);
-    connRef->setCallback(connCallback, connRef);
-    // Force inital callback:
-    router->processTransaction();
+//             assert(polygon.front() == polygon.back());
+//             polygon.pop_back();
 
-    printf("\nAdding a shape.\n");
-    // Create the ShapeRef:
-    Avoid::Polygon shapePoly(3);
-    shapePoly.ps[0] = Avoid::Point(1, 1);
-    shapePoly.ps[1] = Avoid::Point(2.5, 1.5);
-    shapePoly.ps[2] = Avoid::Point(1.5, 2.5);
-    Avoid::ShapeRef *shapeRef = new Avoid::ShapeRef(router, shapePoly);
-    router->processTransaction();
+//             qDebug() << "Polygon vertices:";
+//             for (int i = 0; i < polygon.size(); ++i) {
+//                 qDebug() << "  Vertex" << i << ": (" << polygon[i].x() << "," << polygon[i].y() << ")";
+//             }
+//             qDebug() << "---";
 
-    printf("\nShifting endpoint.\n");
-    Avoid::Point dstPt2(6, 4.5);
-    connRef->setDestEndpoint(dstPt2);
-    // It's expected you know the connector needs rerouting, so the callback
-    // isn't called.  You can force it to be called though, via:
-    router->processTransaction();
+//             schematichelper::Shape shape{};
+//             shape.id = this->data(114514).toInt();
+//             for (auto p : polygon) {
+//                 shape.polygon.push_back({p.x(), p.y()});
+//             }
+//             schematicHelper->moveShapes({shape});
+//             schematicHelper->update();
+//             auto path = schematicHelper->getPaths()[0];
+//             // clear last path and redraw
+//             for (auto p : path) {
+//                 std::cout << "(" << p.x << "," << p.y << ") ";
+//             }
+//             std::cout << std::endl;
+//         }
+//         return QGraphicsRectItem::itemChange(change, value);
+//     }
+// };
 
-    printf("\nMoving shape right by 0.5.\n");
-    router->moveShape(shapeRef, 0.5, 0);
-    router->processTransaction();
+// class MainWindow : public QMainWindow {
+// public:
+//     explicit MainWindow(QWidget *parent = nullptr) : QMainWindow(parent) {
+//         QGraphicsScene *scene = new QGraphicsScene(this);
+//         QGraphicsView *view = new QGraphicsView(scene, this);
+//         setCentralWidget(view);
 
-    router->outputDiagram("output/example");
-    delete router;
-    return 0;
-}
+//         // Create a 5x5 grid of squares
+//         for (auto x = 0; x <= 200; x += 50) {
+//             for (auto y = 0; y <= 200; y += 50) {
+//                 // Fixed: now passing 4 parameters (x, y, width, height)
+//                 auto square = new DraggableSquare(x, y, 30, 30);
+//                 scene->addItem(square);
 
+//                 schematichelper::Shape shape{};
+//                 shape.id = (x / 50) + (y / 50) * 5;
+//                 shape.polygon = {
+//                     {1.0 * x, 1.0 * y},
+//                     {1.0 * x + 30, 1.0 * y},
+//                     {1.0 * x + 30, 1.0 * y + 30},
+//                     {1.0 * x, 1.0 * y + 30},
+//                 };
+//                 schematicHelper->addShapes({shape});
+
+//                 square->setData(114514, shape.id); // Store shape ID for reference
+//             }
+//         }
+
+//         schematichelper::Line line{};
+//         line.id = 0;
+//         line.src = {0, 0};
+//         line.dst = {250, 250};
+//         schematicHelper->addLines({line});
+
+//         schematicHelper->update();
+//         auto path = schematicHelper->getPaths()[0];
+//         for (auto p : path) {
+//             std::cout << "(" << p.x << "," << p.y << ") ";
+//         }
+//         std::cout << std::endl;
+//         // draw path
+
+//         resize(500, 400);
+
+//         // Print initial instruction
+//         qDebug() << "Created 5x5 grid of draggable squares with a zigzag line. Drag them to see position changes.";
+//     }
+// };
+
+// int main(int argc, char *argv[]) {
+//     QApplication app(argc, argv);
+//     MainWindow window;
+//     window.show();
+//     return app.exec();
+// }

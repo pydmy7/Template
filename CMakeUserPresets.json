@@ -11,6 +11,7 @@
             "inherits": [ "base" ],
             "hidden": true,
             "cacheVariables": {
+                "Qt5_DIR": "D:/Library/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5"
             }
         },
         {

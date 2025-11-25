@@ -32,6 +32,12 @@ endif()
 
 project(Template LANGUAGES C CXX CUDA)
 
+if (CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/$<CONFIG>)
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+endif()
+
 include(external/FindLibray.cmake)
 add_subdirectory(external)
 
