@@ -148,7 +148,7 @@ class ControlPanel : public QWidget {
     Q_OBJECT
 
 public:
-    ControlPanel(QWidget* parent = nullptr) : QWidget(parent) {
+    explicit ControlPanel(QWidget* parent = nullptr) : QWidget(parent) {
         setupUI();
         connectSignals();
     }
@@ -279,24 +279,24 @@ private:
         connect(m_removeShapeBtn, &QPushButton::clicked, this, &ControlPanel::onRemoveShape);
     }
 
-    QSpinBox* m_lineIdSpin;
-    QSpinBox* m_srcXSpin;
-    QSpinBox* m_srcYSpin;
-    QSpinBox* m_dstXSpin;
-    QSpinBox* m_dstYSpin;
-    QPushButton* m_addLineBtn;
+    QSpinBox* m_lineIdSpin{};
+    QSpinBox* m_srcXSpin{};
+    QSpinBox* m_srcYSpin{};
+    QSpinBox* m_dstXSpin{};
+    QSpinBox* m_dstYSpin{};
+    QPushButton* m_addLineBtn{};
 
-    QSpinBox* m_removeLineIdSpin;
-    QPushButton* m_removeLineBtn;
+    QSpinBox* m_removeLineIdSpin{};
+    QPushButton* m_removeLineBtn{};
 
-    QSpinBox* m_shapeXSpin;
-    QSpinBox* m_shapeYSpin;
-    QSpinBox* m_shapeWidthSpin;
-    QSpinBox* m_shapeHeightSpin;
-    QPushButton* m_addShapeBtn;
+    QSpinBox* m_shapeXSpin{};
+    QSpinBox* m_shapeYSpin{};
+    QSpinBox* m_shapeWidthSpin{};
+    QSpinBox* m_shapeHeightSpin{};
+    QPushButton* m_addShapeBtn{};
 
-    QSpinBox* m_removeShapeIdSpin;
-    QPushButton* m_removeShapeBtn;
+    QSpinBox* m_removeShapeIdSpin{};
+    QPushButton* m_removeShapeBtn{};
 };
 
 class MainWindow : public QMainWindow {
@@ -447,8 +447,8 @@ private:
         }
     }
 
-    QGraphicsScene* m_scene;
-    ControlPanel* m_controlPanel;
+    QGraphicsScene* m_scene{};
+    ControlPanel* m_controlPanel{};
     int m_nextShapeId;
     std::unordered_map<int, DraggableSquare*> m_shapes;
     std::unordered_map<int, std::pair<QGraphicsEllipseItem*, QGraphicsEllipseItem*>> m_lineEndpoints;
