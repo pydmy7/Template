@@ -1,6 +1,7 @@
 #include "SchematicHelper.hpp"
 
-#include "libavoid/libavoid.h"
+#include "libavoid/router.h"
+#include "libavoid/shape.h"
 
 namespace schematichelper {
 
@@ -11,6 +12,7 @@ SchematicHelper::SchematicHelper() {
     router_->setRoutingParameter(Avoid::idealNudgingDistance, 25);
     router_->setRoutingOption(Avoid::nudgeOrthogonalSegmentsConnectedToShapes, true);
     router_->setRoutingOption(Avoid::nudgeOrthogonalTouchingColinearSegments, true);
+    router_->setRoutingOption(Avoid::nudgeSharedPathsWithCommonEndPoint, false);
 }
 
 void SchematicHelper::addLines(const std::vector<Line>& lines) {

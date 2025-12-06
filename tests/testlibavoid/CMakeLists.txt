@@ -1,6 +1,5 @@
 set(target testlibavoid)
 add_executable(${target}
-    example.cpp
     SchematicHelper.cpp
     main.cpp
 )
